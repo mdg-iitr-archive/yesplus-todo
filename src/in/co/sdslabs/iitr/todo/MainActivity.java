@@ -2,7 +2,6 @@ package in.co.sdslabs.iitr.todo;
 
 import java.util.ArrayList;
 
-import net.viralpatel.android.speechtotextdemo.R;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
