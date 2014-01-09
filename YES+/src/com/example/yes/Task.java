@@ -2,14 +2,12 @@ package com.example.yes;
 
 public class Task {
 	int id;
-	boolean urgent, important;
 	int priority;
 	String dueDate;
 	String taskName;
 	boolean done;
 
 	public Task() {
-		priority = (urgent ? 1 : 0) * 2 + (important ? 1 : 0);
 	}
 
 	public Task(int priority, String dueDate, String taskName) {

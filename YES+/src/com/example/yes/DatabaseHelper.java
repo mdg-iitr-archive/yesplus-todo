@@ -53,6 +53,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.insert(TABLE, null, values);
 		db.close();
 		Log.i("add", task.getTaskName());
+		// code to sort the database in order of priority
+		// db.query(TABLE,
+		// new String[] { KEY_ID, KEY_PRIORITY, KEY_DATE, KEY_TASK },
+		// null, null, null, null, KEY_PRIORITY + " DESC");
 
 	}
 
@@ -73,6 +77,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				tasks.add(task);
 			} while (cursor.moveToNext());
 		}
+		db.close();
 		return tasks;
 
 	}
@@ -81,6 +86,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 		db.delete(TABLE, KEY_ID, new String[] { String.valueOf(task.getId()) });
 		db.close();
+		Log.i("delete", task.getTaskName());
 
 	}
 
@@ -92,15 +98,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		values.put(KEY_TASK, task.getTaskName());
 		int i = db.update(TABLE, values, KEY_ID,
 				new String[] { String.valueOf(task.getId()) });
-		
-		//code to sort the database in order of priority
-		db.query(TABLE,
-				new String[] { KEY_ID, KEY_PRIORITY, KEY_DATE, KEY_TASK },
-				null, null, null, null, KEY_PRIORITY + " DESC");
-		//set adapter to display contents
-		
+
+		Log.i("update", task.getTaskName());
 		db.close();
 		return i;
 
 	}
+
 }

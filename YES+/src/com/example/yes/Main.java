@@ -1,29 +1,45 @@
 package com.example.yes;
 
-import java.util.List;
-
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 
-public class Main extends Activity implements OnCheckedChangeListener {
+public class Main extends Activity implements OnClickListener {
+
+	EditText etTask;
+	Button add;
+	ImageButton speak;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		DatabaseHelper db = new DatabaseHelper(this);
-		db.addTask(new Task(2, "fnds", "work on database"));
-		db.addTask(new Task(0, "4ds", "work on the layouts"));
-		db.addTask(new Task(1, "4dSDCAISNs", "work on the project"));
-		List<Task> list = db.getAllTasks();
-
+		etTask = (EditText) findViewById(R.id.etTask);
+		add = (Button) findViewById(R.id.bAdd);
+		speak = (ImageButton) findViewById(R.id.ibSpeak);
+		add.setOnClickListener(this);
+		speak.setOnClickListener(this);
 	}
 
 	@Override
-	public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
+	public void onClick(View v) {
 		// TODO Auto-generated method stub
+		switch (v.getId()) {
+		case R.id.bAdd:
+			Intent intent = new Intent(Main.this, AddTask.class);
+			//put edit text string into bundle and transfer it
+			startActivity(intent);
+			break;
+		case R.id.ibSpeak:
+			// convert speech to text
+			// merge with Anindya's code
+			break;
+		}
 
 	}
 
