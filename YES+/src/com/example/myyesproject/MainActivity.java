@@ -23,7 +23,7 @@ import android.widget.ListView;
 
 public class MainActivity extends Activity implements OnClickListener {
 
-	Button add;
+	Button add, Graph;
 	String data = "Not there";
 	ListView display;
 	ListView displayDone;
@@ -38,6 +38,9 @@ public class MainActivity extends Activity implements OnClickListener {
 		display = (ListView) findViewById(R.id.listResult);
 		displayDone = (ListView) findViewById(R.id.listResultDone);
 		add.setOnClickListener(this);
+		
+		Graph = (Button) findViewById(R.id.bGraph);
+		Graph.setOnClickListener(this);
 		@SuppressWarnings("unused")
 		ArrayList<Task> listAct = new ArrayList<Task>();
 		tasks = new ArrayList<Task>();
@@ -158,6 +161,11 @@ public class MainActivity extends Activity implements OnClickListener {
 		case R.id.bAdd:
 			Intent i = new Intent(MainActivity.this, SecondClass.class);
 			startActivity(i);
+			finish();
+			break;
+		case R.id.bGraph:
+			Intent a = new Intent(MainActivity.this, Graph.class);
+			startActivity(a);
 			finish();
 			break;
 		}
