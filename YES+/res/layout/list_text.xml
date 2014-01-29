@@ -2,51 +2,41 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
     android:descendantFocusability="blocksDescendants"
-     >
+    android:orientation="horizontal" >
 
-<LinearLayout 
-    android:layout_width="wrap_content" 
-  android:layout_height="wrap_content"
-    android:orientation="vertical" 
-    android:layout_marginRight="150dp"
-    android:layout_weight="1"
-    >
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="150dp"
+        android:layout_weight="1"
+        android:orientation="vertical" >
 
-    <TextView android:id="@+id/Task"
-  android:textSize="14sp" 
-  android:textStyle="bold" 
- 
-  android:layout_width="wrap_content" 
-  android:layout_height="wrap_content"
-  android:text="Task :"
-  />
- <TextView android:id="@+id/num" 
-  android:layout_width="wrap_content" 
-  android:layout_height="wrap_content"
-  android:text="Priority :"
-  />
- <TextView android:id="@+id/date" 
-  android:layout_width="wrap_content" 
-  android:layout_height="wrap_content"
-  android:text="Due Date :"/>
- <TextView android:id="@+id/time" 
-  android:layout_width="wrap_content" 
-  android:layout_height="wrap_content"
-  android:text="Due Time :"/>
- <TextView android:id="@+id/done" 
-  android:layout_width="wrap_content" 
-  android:layout_height="wrap_content"
-  android:text="Due Time :"/>
- 
- </LinearLayout>
- <CheckBox 
-     android:id="@+id/check" 
-  android:layout_width="wrap_content" 
-  android:layout_height="wrap_content"
-  android:layout_gravity="right"
-     />
+        <TextView
+            android:id="@+id/Task"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Task :"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Due Date :" />
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Due Time :" />
+    </LinearLayout>
+
+    <CheckBox
+        android:id="@+id/check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right" />
+
 </LinearLayout>
-
-

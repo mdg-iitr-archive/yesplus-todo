@@ -1,16 +1,17 @@
-package in.co.sdslabs.iitr.todo;
+package com.example.myyesproject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class ShowTodayTask extends Activity{
+public class ShowTodayTask extends Activity {
 	TextView res;
 	ListView list;
 
@@ -19,25 +20,26 @@ public class ShowTodayTask extends Activity{
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.showtodaytask);
-		list=(ListView)findViewById(R.id.lvtask);
-		res=(TextView)findViewById(R.id.textView1);
-		ArrayList<Product> products = new ArrayList<Product>();
+		list = (ListView) findViewById(R.id.lvtask);
+		res = (TextView) findViewById(R.id.textView1);
+		ArrayList<Task> tasks = new ArrayList<Task>();
 		DatabaseHelper info = new DatabaseHelper(this);
 		final Calendar c = Calendar.getInstance();
 		int year = c.get(Calendar.YEAR);
 		int month = c.get(Calendar.MONTH);
 		int day = c.get(Calendar.DAY_OF_MONTH);
-		
 		ListAdapter boxAdapter;
 		try {
 			info.open();
-			products = info.getAllTasks();
-            info.close();
+			tasks = info.getAllTasks();
+			info.close();
 		} catch (Exception e) {
 
 		}
-		class DateSort implements Comparator<Product> {
-			public int compare(Product left, Product right) {
+		@SuppressWarnings("unused")
+		class DateSort implements Comparator<Task> {
+			@SuppressWarnings("deprecation")
+			public int compare(Task left, Task right) {
 				String lday = left.date.split("-")[0];
 				String lmonth = left.date.split("-")[1];
 				String lyear = left.date.split("-")[2];
@@ -58,32 +60,25 @@ public class ShowTodayTask extends Activity{
 
 			}
 		}
-		class According_To_Num implements Comparator<Product> {
-			public int compare(Product left, Product right) {
+		class According_To_Num implements Comparator<Task> {
+			public int compare(Task left, Task right) {
 
 				return right.done - left.done;
 
 			}
 		}
-		Collections.sort(products, new According_To_Num());
-		ArrayList<Product> todaylist = new ArrayList<Product>();
-    
-		
-		for(int i=0;i<products.size();i++)
-		{
-			//String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
-			
-			int lday = Integer.parseInt(products.get(i).date.split("-")[0]);
-			int lmonth = Integer.parseInt(products.get(i).date.split("-")[1]);
-			int lyear = Integer.parseInt(products.get(i).date.split("-")[2]);
-			
-		    if(day==lday && (month+1)==lmonth && year==lyear)
-		    {
-		    	todaylist.add(products.get(i));
-		    }
-		} 
+		Collections.sort(tasks, new According_To_Num());
+		ArrayList<Task> todaylist = new ArrayList<Task>();
+
+		for (int i = 0; i < tasks.size(); i++) {
+			int lday = Integer.parseInt(tasks.get(i).date.split("-")[0]);
+			int lmonth = Integer.parseInt(tasks.get(i).date.split("-")[1]);
+			int lyear = Integer.parseInt(tasks.get(i).date.split("-")[2]);
+			if (day == lday && (month + 1) == lmonth && year == lyear) {
+				todaylist.add(tasks.get(i));
+			}
+		}
 		boxAdapter = new ListAdapter(this, todaylist);
 		list.setAdapter(boxAdapter);
 	}
-
 }

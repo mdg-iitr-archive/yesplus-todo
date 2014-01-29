@@ -1,16 +1,16 @@
-package in.co.sdslabs.iitr.todo;
+package com.example.myyesproject;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 
-import android.R.color;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,56 +19,43 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.TextView;
 
 public class MainActivity extends Activity implements OnClickListener {
 
-	EditText task;
 	Button add;
-	ImageButton speak;
-	TextView result;
 	String data = "Not there";
 	ListView display;
+	ListView displayDone;
 	String[] dates = {};
-	ArrayList<Product> products;
+	ArrayList<Task> tasks;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		// task=(EditText)findViewById(R.id.etTask);
 		add = (Button) findViewById(R.id.bAdd);
-		// speak=(ImageButton)findViewById(R.id.ibSpeak); */
-		result = (TextView) findViewById(R.id.result);
 		display = (ListView) findViewById(R.id.listResult);
-		ArrayList<Product> listAct = new ArrayList<Product>();
-
-		products = new ArrayList<Product>();
+		displayDone = (ListView) findViewById(R.id.listResultDone);
+		add.setOnClickListener(this);
+		@SuppressWarnings("unused")
+		ArrayList<Task> listAct = new ArrayList<Task>();
+		tasks = new ArrayList<Task>();
 		ListAdapter boxAdapter;
-		ArrayList<String> datesarray = new ArrayList<String>();
+		// ListAdapter boxAdapterDone;
 		DatabaseHelper info = new DatabaseHelper(this);
-		String d = "";
 		try {
 			info.open();
 			data = info.getData();
-			// listAct=info.getAllTasks();
-			products = info.getAllTasks();
+			tasks = info.getAllTasks();
 			info.close();
 		} catch (Exception e) {
-
+			e.printStackTrace();
 		}
-		class According_To_Num implements Comparator<Product> {
-			public int compare(Product left, Product right) {
 
-				return right.num - left.num;
-
-			}
-		}
-		class DateSort implements Comparator<Product> {
-			public int compare(Product left, Product right) {
+		class DateSort implements Comparator<Task> {
+			@SuppressWarnings("deprecation")
+			public int compare(Task left, Task right) {
 				String lday = left.date.split("-")[0];
 				String lmonth = left.date.split("-")[1];
 				String lyear = left.date.split("-")[2];
@@ -76,7 +63,6 @@ public class MainActivity extends Activity implements OnClickListener {
 				ldate.setDate(Integer.parseInt(lday));
 				ldate.setMonth(Integer.parseInt(lmonth));
 				ldate.setYear(Integer.parseInt(lyear));
-
 				String rday = right.date.split("-")[0];
 				String rmonth = right.date.split("-")[1];
 				String ryear = right.date.split("-")[2];
@@ -84,90 +70,85 @@ public class MainActivity extends Activity implements OnClickListener {
 				rdate.setDate(Integer.parseInt(rday));
 				rdate.setMonth(Integer.parseInt(rmonth));
 				rdate.setYear(Integer.parseInt(ryear));
-
-				return ldate.compareTo(rdate);
+				if (left.date.equals(right.date)) {
+					sortPriority(left, right);
+					Log.i("p", "priority sorted");
+				}
+				if (sortPriority(left, right)) {
+					return ldate.compareTo(rdate);
+				} else {
+					return rdate.compareTo(ldate);
+				}
 
 			}
+
+			private boolean sortPriority(Task left, Task right) {
+				// TODO Auto-generated method stub
+				Log.i("pi", "sort priority called");
+				if (left.priority > right.priority) {
+					return true;
+				} else {
+					return false;
+				}
+			}
 		}
-		Collections.sort(products, new DateSort());
-		listAct = products;
-		// Bundle gotBasket = getIntent().getExtras();
-		// Boolean done = gotBasket.getBoolean("done");
-		boxAdapter = new ListAdapter(this, products);
-
-		// for (int i = 0; i < products.size(); i++) {
-		// if(products.get(i).done == 1){
-
-		// }
-		// }
-
+		Collections.sort(tasks, new DateSort());
+		listAct = tasks;
+		boxAdapter = new ListAdapter(this, tasks);
 		display.setAdapter(boxAdapter);
-		// display = getListView();
-
 		display.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-
-				// int a=products.get(position).id;
-
 				DailogSet((int) id);
-
 			}
 
 			private void DailogSet(final int id) {
 				// TODO Auto-generated method stub
-				final String items[] = { "Modify", "Delete" };
 				AlertDialog.Builder ab = new AlertDialog.Builder(
 						MainActivity.this);
-				ab.setTitle("Dialog Title");
-				ab.setItems(items, new DialogInterface.OnClickListener() {
+				ab.setTitle("Modify");
+				ab.setMessage("Do you want to modify this task ?")
+						.setCancelable(false)
+						.setPositiveButton("Yes",
+								new DialogInterface.OnClickListener() {
 
-					public void onClick(DialogInterface d, int choice) {
+									@Override
+									public void onClick(DialogInterface dialog,
+											int which) {
+										// TODO Auto-generated method stub
+										Bundle b = new Bundle();
+										int id_delete = tasks.get(id).id;
+										Intent i = new Intent(
+												MainActivity.this,
+												ModifyClass.class);
+										b.putString("_id",
+												Integer.toString(id_delete));
+										b.putString("_edit",
+												tasks.get(id).taskName);
+										b.putString("_date", tasks.get(id).date);
+										b.putString("_time", tasks.get(id).time);
+										b.putString(
+												"_priority",
+												Integer.toString(tasks.get(id).priority));
+										i.putExtras(b);
+										finish();
+										startActivity(i);
+									}
+								})
+						.setNegativeButton("No",
+								new DialogInterface.OnClickListener() {
 
-						int id_delete = products.get(id).id;
-						if (choice == 0) {
-							Bundle b = new Bundle();
-
-							Intent i = new Intent(MainActivity.this,
-									ModifyClass.class);
-							b.putString("_id", Integer.toString(id_delete));
-							b.putString("_edit", products.get(id).task);
-							b.putString("_date", products.get(id).date);
-							b.putString("_time", products.get(id).time);
-							b.putString("_num",
-									Integer.toString(products.get(id).num));
-
-							i.putExtras(b);
-							finish();
-							startActivity(i);
-						} else if (choice == 1) {
-							try {
-								DatabaseHelper entry = new DatabaseHelper(
-										MainActivity.this);
-								entry.open();
-								entry.deleteEntry(id_delete);
-
-								finish();
-								Intent intent = new Intent(MainActivity.this,
-										MainActivity.class);
-								startActivity(intent);
-								entry.close();
-							} catch (Exception e) {
-
-							}
-						}
-
-					}
-				});
-				ab.show();
+									@Override
+									public void onClick(DialogInterface dialog,
+											int which) {
+										// TODO Auto-generated method stub
+										dialog.cancel();
+									}
+								});
+				AlertDialog deleteTask = ab.create();
+				deleteTask.show();
 			}
 		});
-
-		// result.setText(Integer.toString(products.get(0).done));
-
-		add.setOnClickListener(this);
-		// speak.setOnClickListener(this);
-
 	}
 
 	@Override
@@ -176,20 +157,9 @@ public class MainActivity extends Activity implements OnClickListener {
 		switch (v.getId()) {
 		case R.id.bAdd:
 			Intent i = new Intent(MainActivity.this, SecondClass.class);
-
-			// Bundle b=new Bundle();
-			// String s=task.getText().toString();
-			// b.putString("task", s);
-			// i.putExtras(b);
 			startActivity(i);
 			finish();
-
 			break;
-		/*
-		 * case R.id.ibSpeak:
-		 * 
-		 * break;
-		 */
 		}
 
 	}
@@ -210,12 +180,10 @@ public class MainActivity extends Activity implements OnClickListener {
 		case R.id.today_task:
 			Intent i = new Intent(MainActivity.this, ShowTodayTask.class);
 			startActivity(i);
-
 			break;
 		case R.id.Setting:
 			Intent e = new Intent(MainActivity.this, NotifyTimeSetting.class);
 			startActivity(e);
-
 			break;
 		}
 		return false;

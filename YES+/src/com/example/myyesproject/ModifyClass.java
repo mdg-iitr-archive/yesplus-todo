@@ -1,4 +1,4 @@
-package in.co.sdslabs.iitr.todo;
+package com.example.myyesproject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -11,6 +11,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -23,7 +24,9 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 public class ModifyClass extends Activity implements OnClickListener {
-	Button add, datep, timep;
+
+	static final int CUSTOM_DIALOG_ID = 0;
+	Button add, datep, timep, reqTime;
 	int a = 0, b = 0;
 	int year, month, day, hour, minute;
 	EditText t;
@@ -33,7 +36,10 @@ public class ModifyClass extends Activity implements OnClickListener {
 	ImageButton speak;
 	protected static final int RESULT_SPEECH = 1;
 	CheckBox cburg, cbimpt;
-	String _id,_date,_num,_time,_edit;
+	String _id, _date, _priority, _time, _edit;
+	Button btnDone;
+	EditText etHours, etMinutes;
+	Dialog dialog = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +51,8 @@ public class ModifyClass extends Activity implements OnClickListener {
 		_edit = gotBasket.getString("_edit");
 		_date = gotBasket.getString("_date");
 		_time = gotBasket.getString("_time");
-		_num = gotBasket.getString("_num");
-		
+		_priority = gotBasket.getString("_priority");
+
 		final Calendar c = Calendar.getInstance();
 		year = c.get(Calendar.YEAR);
 		month = c.get(Calendar.MONTH);
@@ -59,8 +65,8 @@ public class ModifyClass extends Activity implements OnClickListener {
 
 		add = (Button) findViewById(R.id.bAdd);
 		timep = (Button) findViewById(R.id.bTime);
-
 		datep = (Button) findViewById(R.id.bDate);
+		reqTime = (Button) findViewById(R.id.bReqTime);
 		res = (TextView) findViewById(R.id.tresult);
 		t = (EditText) findViewById(R.id.editText1);
 		speak = (ImageButton) findViewById(R.id.Speak);
@@ -71,6 +77,7 @@ public class ModifyClass extends Activity implements OnClickListener {
 		add.setOnClickListener(this);
 		timep.setOnClickListener(this);
 		datep.setOnClickListener(this);
+		reqTime.setOnClickListener(this);
 		speak.setOnClickListener(this);
 	}
 
@@ -104,6 +111,7 @@ public class ModifyClass extends Activity implements OnClickListener {
 		});
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
@@ -112,62 +120,48 @@ public class ModifyClass extends Activity implements OnClickListener {
 			int n = 0;
 			try {
 				String task = t.getText().toString();
-
-				if (a == 1 && b == 1) // urg and impt
-				{
+				if (a == 1 && b == 1) {
 					n = 3;
-				} else if (a == 1 && b == 0) // only urg
-				{
+				} else if (a == 1 && b == 0) {
 					n = 1;
-				} else if (a == 0 && b == 1) // only impt
-				{
+				} else if (a == 0 && b == 1) {
 					n = 2;
-				} else if (a == 0 && b == 0) // not urg and not impt
-				{
+				} else if (a == 0 && b == 0) {
 					n = 0;
 				}
 
 				DatabaseHelper entry = new DatabaseHelper(ModifyClass.this);
 				entry.open();
-				entry.updateEntry(Integer.parseInt(_id), task, n, s, stime,0);
+				entry.updateTask(Integer.parseInt(_id), task, n, s, stime, 0);
 				entry.close();
 				Intent i = new Intent(ModifyClass.this, MainActivity.class);
 				startActivity(i);
 				finish();
 			} catch (Exception e) {
-
 			}
-
-			// open database to add task
 			break;
-
 		case R.id.bDate:
-
 			showDialog(999);
-
 			break;
 		case R.id.Speak:
-
 			Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-
 			intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "en-US");
-
 			try {
 				startActivityForResult(intent, RESULT_SPEECH);
-
 			} catch (ActivityNotFoundException a) {
 				Toast t = Toast.makeText(getApplicationContext(),
-						"Opps! Your device doesn't support Speech to Text",
+						"Oops! Your device doesn't support Speech to Text",
 						Toast.LENGTH_SHORT);
 				t.show();
-
 			}
 			break;
-
 		case R.id.bTime:
 			showDialog(888);
 			break;
-
+		case R.id.bReqTime:
+			showDialog(CUSTOM_DIALOG_ID);
+			Log.i("req time", "the button has been clicked");
+			break;
 		}
 	}
 
@@ -182,13 +176,40 @@ public class ModifyClass extends Activity implements OnClickListener {
 			// set time picker as current time
 			return new TimePickerDialog(this, timePickerListener, hour, minute,
 					false);
+		case CUSTOM_DIALOG_ID:
+			dialog = new Dialog(ModifyClass.this);
+			dialog.setContentView(R.layout.customdialog);
+			dialog.setTitle("Set Time");
+			etHours = (EditText) dialog.findViewById(R.id.etHours);
+			etMinutes = (EditText) dialog.findViewById(R.id.etMins);
+			btnDone = (Button) dialog.findViewById(R.id.buttonDialog);
+			btnDone.setOnClickListener(btnDoneOnClickListener);
+			return dialog;
 		}
 		return null;
 	}
 
-	private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDialog.OnDateSetListener() {
+	private Button.OnClickListener btnDoneOnClickListener = new Button.OnClickListener() {
 
-		// when dialog box is closed, below method will be called.
+		@Override
+		public void onClick(View arg0) {
+			// TODO Auto-generated method stub
+			showMessage();
+			dialog.dismiss();
+
+		}
+	};
+
+	protected void showMessage() {
+		// TODO Auto-generated method stub
+		Toast.makeText(
+				this,
+				"The time set is " + etHours.getText().toString() + " hrs : "
+						+ etMinutes.getText().toString() + " mins",
+				Toast.LENGTH_LONG).show();
+	}
+
+	private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDialog.OnDateSetListener() {
 		public void onDateSet(DatePicker view, int selectedYear,
 				int selectedMonth, int selectedDay) {
 			year = selectedYear;
@@ -196,10 +217,6 @@ public class ModifyClass extends Activity implements OnClickListener {
 			day = selectedDay;
 			s = Integer.toString(day) + "-" + Integer.toString(month + 1) + "-"
 					+ Integer.toString(year);
-			// set selected date into textview
-			// res.setText(new StringBuilder().append(month + 1)
-			// .append("-").append(day).append("-").append(year)
-			// .append(" "));
 			datep.setText(s);
 
 		}
@@ -208,20 +225,16 @@ public class ModifyClass extends Activity implements OnClickListener {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-
 		switch (requestCode) {
 		case RESULT_SPEECH: {
 			if (resultCode == RESULT_OK && null != data) {
-
 				ArrayList<String> text = data
 						.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
 				String dspeak = text.get(0);
 				t.setText(dspeak);
-
 			}
 			break;
 		}
-
 		}
 	}
 
@@ -231,11 +244,7 @@ public class ModifyClass extends Activity implements OnClickListener {
 			hour = selectedHour;
 			minute = selectedMinute;
 			stime = Integer.toString(hour) + "-" + Integer.toString(minute);
-			// set current time into textview
-			// res.setText(new StringBuilder().append(hour)
-			// .append(":").append(minute));
 			timep.setText(stime);
-
 		}
 	};
 

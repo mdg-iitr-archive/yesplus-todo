@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="in.co.sdslabs.iitr.todo"
+    package="com.example.myyesproject"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -13,9 +13,10 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        <receiver android:name="in.co.sdslabs.iitr.todo.Time" />
+        <receiver android:name=".Time" />
+
         <activity
-            android:name="in.co.sdslabs.iitr.todo.MainActivity"
+            android:name="com.example.myyesproject.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,30 +24,28 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-         <activity
-            android:name="in.co.sdslabs.iitr.todo.SecondClass"
+        <activity
+            android:name=".SecondClass"
             android:label="@string/app_name" >
-            
-
         </activity>
         <activity
-            android:name="in.co.sdslabs.iitr.todo.ShowTodayTask"
+            android:name=".ShowTodayTask"
             android:label="@string/app_name" >
-            
-
         </activity>
         <activity
-            android:name="in.co.sdslabs.iitr.todo.NotifyTimeSetting"
+            android:name=".NotifyTimeSetting"
             android:label="@string/app_name" >
-            
-
         </activity>
-         <activity
-            android:name="in.co.sdslabs.iitr.todo.ModifyClass"
+        <activity
+            android:name=".ModifyClass"
             android:label="@string/app_name" >
-            
-
         </activity>
+
+        <receiver android:name="AlarmReceiver" >
+            <intent-filter>
+                <action android:name="com.example.myyesproject.NOTIFICATION_ALARM" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
